@@ -18,9 +18,25 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+    // Exclude Node.js modules from browser bundle
+    external: [
+      "@tanstack/start-storage-context",
+      "node:async_hooks",
+    ],
+  },
+  ssr: {
+    external: [
+      "@tanstack/start-storage-context",
+    ],
+    noExternal: [],
   },
   build: {
     outDir: "dist",
     emptyOutDir: true,
+    rollupOptions: {
+      external: [
+        "@tanstack/start-storage-context",
+      ],
+    },
   },
 });
