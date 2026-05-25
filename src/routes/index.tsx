@@ -1,6 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
 import { PhoneFrame } from "@/components/PhoneFrame";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -18,7 +17,6 @@ function LoginPage() {
   const [studentId, setStudentId] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const login = useServerFn(loginUser);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
