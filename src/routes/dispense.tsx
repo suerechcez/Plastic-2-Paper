@@ -30,9 +30,9 @@ function DispensePage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard", sid],
-    queryFn: () => fetchDashboard({ data: { studentId: sid! } }),
+    queryFn: () => getDashboard({ studentId: sid! }),
     enabled: !!sid,
-  });getDashboard({ studentId: sid!
+  });
 
   if (!sid || isLoading || !data) {
     return <PhoneFrame><div className="flex-1 bg-background" /></PhoneFrame>;
