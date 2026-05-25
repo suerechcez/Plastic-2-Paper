@@ -6,7 +6,7 @@ import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import path from "node:path";
 
 // Standalone Vite config for deploying to Vercel as a static SPA.
-// Does NOT use TanStack Start / Cloudflare — pure client-side build.
+// Pure client-side build with direct Supabase integration.
 export default defineConfig({
   plugins: [
     tsConfigPaths(),
@@ -18,25 +18,9 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
-    // Exclude Node.js modules from browser bundle
-    external: [
-      "@tanstack/start-storage-context",
-      "node:async_hooks",
-    ],
-  },
-  ssr: {
-    external: [
-      "@tanstack/start-storage-context",
-    ],
-    noExternal: [],
   },
   build: {
     outDir: "dist",
     emptyOutDir: true,
-    rollupOptions: {
-      external: [
-        "@tanstack/start-storage-context",
-      ],
-    },
   },
 });

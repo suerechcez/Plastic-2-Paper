@@ -1,6 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PhoneFrame } from "@/components/PhoneFrame";
 import { DashboardHeader } from "@/components/DashboardHeader";
@@ -18,8 +17,6 @@ export const Route = createFileRoute("/dashboard")({
 function DashboardPage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const fetchDashboard = useServerFn(getDashboard);
-  const deposit = useServerFn(depositBottles);
   const sid = typeof window !== "undefined" ? getSession() : null;
 
   useEffect(() => {
@@ -28,7 +25,7 @@ function DashboardPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard", sid],
-    queryFn: () => fetchDashboard({ data: { studentId: sid! } }),
+    queryFn: () => getDashboard({ studentId: sid! }),
     enabled: !!sid,
   });
 
@@ -42,7 +39,7 @@ function DashboardPage() {
 
   const handleDeposit = async () => {
     try {
-      const res = await deposit({ data: { studentId: sid, amount: 2 } });
+      const res = await depositBottles({ studentId: sid, amount: 2 });
       if (!res.ok) { toast.error(res.error); return; }
       toast.success("Bottle accepted • +2 points");
       qc.invalidateQueries({ queryKey: ["dashboard", sid] });

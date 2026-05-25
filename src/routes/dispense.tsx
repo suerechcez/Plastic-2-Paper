@@ -1,6 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PhoneFrame } from "@/components/PhoneFrame";
 import { DashboardHeader } from "@/components/DashboardHeader";
@@ -21,8 +20,6 @@ type Stage = "idle" | "dispensing" | "success";
 function DispensePage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const fetchDashboard = useServerFn(getDashboard);
-  const withdraw = useServerFn(withdrawPaper);
   const sid = typeof window !== "undefined" ? getSession() : null;
   const [qty, setQty] = useState(1);
   const [stage, setStage] = useState<Stage>("idle");
@@ -35,7 +32,7 @@ function DispensePage() {
     queryKey: ["dashboard", sid],
     queryFn: () => fetchDashboard({ data: { studentId: sid! } }),
     enabled: !!sid,
-  });
+  });getDashboard({ studentId: sid!
 
   if (!sid || isLoading || !data) {
     return <PhoneFrame><div className="flex-1 bg-background" /></PhoneFrame>;
@@ -50,7 +47,7 @@ function DispensePage() {
   const handleDispense = async () => {
     if (stage !== "idle" || qty < 1 || qty > maxSheets) return;
     setStage("dispensing");
-    const res = await withdraw({ data: { studentId: sid, sheets: qty } });
+    const res = await withdrawPaper({ studentId: sid, sheets: qty });
     if (!res.ok) {
       setStage("idle");
       toast.error(res.error);

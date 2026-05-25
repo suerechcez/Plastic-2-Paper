@@ -29,7 +29,7 @@ function LoginPage() {
     }
     setLoading(true);
     try {
-      const res = await login({ data: { studentId: id } });
+      const res = await loginUser({ studentId: id });
       if (!res.ok) { toast.error(res.error); return; }
       setSession(id);
       navigate({ to: "/dashboard" });

@@ -28,7 +28,7 @@ function SignupPage() {
     if (!/^\d{10}$/.test(studentId)) { toast.error("Student ID must be exactly 10 digits"); return; }
     setLoading(true);
     try {
-      const res = await signup({ data: { name: name.trim(), studentId } });
+      const res = await signupUser({ name: name.trim(), studentId });
       if (!res.ok) { toast.error(res.error); return; }
       setSuccess(true);
       setTimeout(() => {
