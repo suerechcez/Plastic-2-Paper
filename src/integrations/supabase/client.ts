@@ -2,6 +2,9 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
+let _supabase: ReturnType<typeof createClient<Database>> | null = null;
+let _initError: Error | null = null;
+
 function createSupabaseClient() {
   // Use import.meta.env for client-side (Vite build-time replacement)
   // Fall back to process.env for SSR (server-side rendering)
@@ -10,10 +13,10 @@ function createSupabaseClient() {
 
   if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
     const missing = [
-      ...(!SUPABASE_URL ? ['SUPABASE_URL'] : []),
-      ...(!SUPABASE_PUBLISHABLE_KEY ? ['SUPABASE_PUBLISHABLE_KEY'] : []),
+      ...(!SUPABASE_URL ? ['VITE_SUPABASE_URL'] : []),
+      ...(!SUPABASE_PUBLISHABLE_KEY ? ['VITE_SUPABASE_PUBLISHABLE_KEY'] : []),
     ];
-    const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Connect Supabase in Lovable Cloud.`;
+    const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Please set them in Vercel Environment Variables.`;
     console.error(`[Supabase] ${message}`);
     throw new Error(message);
   }
@@ -27,14 +30,22 @@ function createSupabaseClient() {
   });
 }
 
-let _supabase: ReturnType<typeof createSupabaseClient> | undefined;
-
+// Lazy-loaded proxy that initializes on first use
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
-export const supabase = new Proxy({} as ReturnType<typeof createSupabaseClient>, {
+export const supabase = new Proxy({} as ReturnType<typeof createClient<Database>>, {
   get(_, prop, receiver) {
-    if (!_supabase) _supabase = createSupabaseClient();
-    return Reflect.get(_supabase, prop, receiver);
+    try {
+      if (!_supabase) {
+        _supabase = createSupabaseClient();
+        _initError = null;
+      }
+      return Reflect.get(_supabase, prop, receiver);
+    } catch (error) {
+      _initError = error as Error;
+      console.error('[Supabase] Initialization failed:', _initError);
+      throw _initError;
+    }
   },
 });
 
